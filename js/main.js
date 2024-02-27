@@ -1,4 +1,3 @@
-
 const DESCRIPTION = [
   'Передо мной цветная/черно-белая фотография',
   'Морозным утром город укутался в снежное одеяло, превратившись в сказочную зимнюю страну чудес.',
@@ -38,6 +37,38 @@ const NAME = [
   'Юлия',
 ];
 
+const QUANTITY = 25;
+
+const ID = {
+  min: 1,
+  max: 25
+};
+
+const PHOTO_ID = {
+  min: 1,
+  max: 25
+};
+
+const ID_COMMENTS = {
+  min: 1,
+  max: 200
+};
+
+const NUMBER_OF_COMMENTS = {
+  min: 0,
+  max: 30
+};
+
+const LIKES = {
+  min: 15,
+  max: 200
+};
+
+const AVATAR = {
+  min: 1,
+  max: 6
+};
+
 function getRandomInteger(min, max) {
   const lower = Math.ceil(Math.min(Math.abs(min), Math.abs(max)));
   const upper = Math.floor(Math.max(Math.abs(min), Math.abs(max)));
@@ -61,18 +92,18 @@ const getRandom = (min, max) => {
   };
 };
 
-const generateId = getRandom(1, 25);
-const generatePhotoId = getRandom(1, 25);
-const generateIdComments = getRandom(1, 200);
+const generateId = getRandom(ID.min, ID.max);
+const generatePhotoId = getRandom(PHOTO_ID.min, PHOTO_ID.max);
+const generateIdComments = getRandom(ID_COMMENTS.min, ID_COMMENTS.max);
 
 const generateGetAccess = (el) => el[getRandomInteger(0, el.length - 1)];
 
 const getComment = function () {
   const array = [];
-  for (let i = 0; i < getRandomInteger(0, 30); i++) {
+  for (let i = 0; i < getRandomInteger(NUMBER_OF_COMMENTS.min, NUMBER_OF_COMMENTS.max); i++) {
     array.push({
       id: generateIdComments(),
-      avatar: `img / avatar - ${getRandomInteger(1, 6)}.svg`,
+      avatar: `img/avatar-${getRandomInteger(AVATAR.min, AVATAR.max)}.svg`,
       message: generateGetAccess(MESSAGE),
       name: generateGetAccess(NAME)
     });
@@ -85,10 +116,9 @@ const getObject = () => ({
   id: generateId(),
   url: `photos/${generatePhotoId()}.jpg`,
   description: generateGetAccess(DESCRIPTION),
-  likes: getRandomInteger(15, 200),
+  likes: getRandomInteger(LIKES.min, LIKES.max),
   comments: getComment()
 });
 
-
-const generateData = Array.from({ length: 25 }, getObject);
+const generateData = Array.from({ length: QUANTITY }, getObject);
 generateData();
