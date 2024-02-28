@@ -39,16 +39,17 @@ getNumber('1 кефир, 0.5 батона');
 // Преобразует часы в минуты
 const getMinutes = (time) => {
   const start = time.split(':').map((el) => parseInt(el, 10));
-  start[0] *= 60;
+  const HOUR = 60;
+  start[0] *= HOUR;
   const minutes = start.reduce((sum, el) => sum + el, 0);
   return minutes;
 };
 
 const getTime = (startHour, endHour, startMeeting,durationMeeting) => {
   const startMinutes = getMinutes(startHour);
-  const EndMinutes = getMinutes(endHour);
+  const endMinutes = getMinutes(endHour);
   const startHourMeeting = getMinutes(startMeeting);
-  return (startHourMeeting + durationMeeting <= EndMinutes && startMinutes <= startHourMeeting);
+  return (startHourMeeting + durationMeeting <= endMinutes && startMinutes <= startHourMeeting);
 };
 
 getTime('08:05', '17:00', '8:10', 50);
