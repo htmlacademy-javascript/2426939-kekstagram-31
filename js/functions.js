@@ -32,3 +32,24 @@ const getNumber = (string) => {
 };
 
 getNumber('1 кефир, 0.5 батона');
+
+
+/// 4 Задание. Напишите функцию, которая принимает время начала и конца рабочего дня, а также время старта и продолжительность встречи в минутах и возвращает true, если встреча не выходит за рамки рабочего дня, и false, если выходит.Время указывается в виде строки в формате часы: минуты.Для указания часов и минут могут использоваться как две цифры, так и одна.Например, 8 часов 5 минут могут быть указаны по - разному: 08:05, 8: 5, 08: 5 или 8:05.Продолжительность задаётся числом.Гарантируется, что и рабочий день, и встреча укладываются в одни календарные сутки.
+
+// Преобразует часы в минуты
+const getMinutes = (time) => {
+  const start = time.split(':').map((el) => parseInt(el, 10));
+  const HOUR = 60;
+  start[0] *= HOUR;
+  const minutes = start.reduce((sum, el) => sum + el, 0);
+  return minutes;
+};
+
+const getTime = (startHour, endHour, startMeeting,durationMeeting) => {
+  const startMinutes = getMinutes(startHour);
+  const endMinutes = getMinutes(endHour);
+  const startHourMeeting = getMinutes(startMeeting);
+  return (startHourMeeting + durationMeeting <= endMinutes && startMinutes <= startHourMeeting);
+};
+
+getTime('08:05', '17:00', '8:10', 50);
