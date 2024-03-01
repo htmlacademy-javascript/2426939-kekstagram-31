@@ -45,7 +45,7 @@ const getMinutes = (time) => {
   return minutes;
 };
 
-const getTime = (startHour, endHour, startMeeting,durationMeeting) => {
+const getTime = (startHour, endHour, startMeeting, durationMeeting) => {
   const startMinutes = getMinutes(startHour);
   const endMinutes = getMinutes(endHour);
   const startHourMeeting = getMinutes(startMeeting);
