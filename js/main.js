@@ -1,3 +1,1 @@
-import {generateData} from './data.js';
-
-generateData();
+import './thumbnails.js';
