@@ -1,16 +1,17 @@
 import { isEscapeKey } from './util.js';
 import { pictures, photoData } from './thumbnails.js';
 
-
-const popup = document.querySelector('.big-picture');
-const image = document.querySelector('.big-picture__img');
-const likesCount = document.querySelector('.likes-count');
-const commentTotalCount = document.querySelector('.social__comment-total-count');
-const descriptionPhoto = document.querySelector('.social__caption');
-const socialComments = document.querySelector('.social__comments');
 const body = document.querySelector('body');
-const closeButton = document.querySelector('.big-picture__cancel');
-
+const popup = document.querySelector('.big-picture');
+const image = popup.querySelector('.big-picture__img');
+const likesCount = popup.querySelector('.likes-count');
+const commentShownCount = popup.querySelector('.social__comment-shown-count');
+const commentTotalCount = popup.querySelector('.social__comment-total-count');
+const descriptionPhoto = popup.querySelector('.social__caption');
+const socialComments = popup.querySelector('.social__comments');
+const closeButton = popup.querySelector('.big-picture__cancel');
+const loadMoreButton = popup.querySelector('.comments-loader');
+const pictureDataFragment = document.createDocumentFragment();
 
 const onDocumentKeydown = (evt) => {
   if (isEscapeKey(evt)) {
@@ -29,8 +30,7 @@ const closePopup = () => {
   document.removeEventListener('keydown', onDocumentKeydown);
 };
 
-const pictureDataFragment = document.createDocumentFragment();
-
+// Создает комментарий
 const createElement = (comment) => {
   const element = document.createElement('li');
   const newImage = document.createElement('img');
@@ -48,27 +48,50 @@ const createElement = (comment) => {
   pictureDataFragment.append(element);
 };
 
-const createComments = (comments) => {
-  socialComments.innerHTML = '';
-  comments.forEach((comment) => {
-    createElement(comment);
-  });
-  socialComments.append(pictureDataFragment);
+// Создает список комментариев
+const createComments = () => {
+  let count = 0;
+  return function (comments, index, limit) {
+    for (let i = index; i < comments.length; i++) {
+      createElement(comments[i]);
+      count++;
+      if (i >= limit) {
+        break;
+      }
+    }
+    commentShownCount.textContent = count;
+    socialComments.append(pictureDataFragment);
+  };
 };
 
+//Событие для открытия экрана
 pictures.addEventListener('click', (evt) => {
-  photoData.forEach(({ id, url, likes, description, comments}) => {
+  let index = 0;
+  let limit = 4;
+  const createSome = createComments();
+
+  //Перебирает массив объектов с данными
+  photoData.forEach(({ id, url, likes, description, comments }) => {
     if (Number(evt.target.closest('.picture').dataset.id) === id) {
       image.children[0].src = url;
       likesCount.textContent = likes;
       descriptionPhoto.textContent = description;
       commentTotalCount.textContent = comments.length;
       body.classList.add('modal-open');
-      createComments(comments);
+      socialComments.innerHTML = '';
+      createSome(comments, index, limit);
       openPopup();
+      if (comments.length >= 5) {
+        loadMoreButton.addEventListener('click', () => {
+          index += 5;
+          limit += 5;
+          createSome(comments, index, limit);
+        });
+      }
     }
   });
 
+  //Событие, закрывающее окно
   closeButton.addEventListener('click', () => {
     closePopup();
   });
