@@ -5,6 +5,9 @@ const template = document.querySelector('#picture').content;
 const templatePicture = template.querySelector('.picture');
 
 
+let count = 0;
+
+
 const photoData = generateData();
 const photoDataFragment = document.createDocumentFragment();
 
@@ -18,7 +21,11 @@ photoData.forEach(({url, description, likes, comments}) => {
   image.alt = description;
   numberOfLikes.textContent = likes;
   numberOfComments.textContent = comments.length;
+  photoElement.setAttribute('data-id', count++);
   photoDataFragment.append(photoElement);
 });
 
 pictures.append(photoDataFragment);
+
+
+export {pictures, photoData};

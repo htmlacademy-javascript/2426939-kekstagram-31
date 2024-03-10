@@ -1,1 +1,2 @@
-import './thumbnails.js';
+import './fullscreen.js';
+
