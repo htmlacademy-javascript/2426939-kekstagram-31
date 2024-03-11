@@ -1,4 +1,5 @@
-import { getRandomInteger, getRandom } from './get-random.js';
+import { getRandomInteger, getRandom } from './util.js';
+let id = 0;
 const DESCRIPTION = [
   'Передо мной цветная/черно-белая фотография',
   'Морозным утром город укутался в снежное одеяло, превратившись в сказочную зимнюю страну чудес.',
@@ -40,11 +41,6 @@ const NAME = [
 
 const QUANTITY = 25;
 
-const ID = {
-  min: 1,
-  max: 25
-};
-
 const PHOTO_ID = {
   min: 1,
   max: 25
@@ -70,7 +66,6 @@ const AVATAR = {
   max: 6
 };
 
-const generateId = getRandom(ID.min, ID.max);
 const generatePhotoId = getRandom(PHOTO_ID.min, PHOTO_ID.max);
 const generateIdComments = getRandom(ID_COMMENTS.min, ID_COMMENTS.max);
 
@@ -90,7 +85,7 @@ const getComment = function () {
 };
 
 const getObject = () => ({
-  id: generateId(),
+  id: id++,
   url: `photos/${generatePhotoId()}.jpg`,
   description: generateGetAccess(DESCRIPTION),
   likes: getRandomInteger(LIKES.min, LIKES.max),

@@ -21,4 +21,6 @@ const getRandom = (min, max) => {
   };
 };
 
-export {getRandomInteger, getRandom};
+const isEscapeKey = (evt) => evt.key === 'Escape';
+
+export { getRandomInteger, getRandom, isEscapeKey };
