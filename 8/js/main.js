@@ -1,0 +1,2 @@
+import './fullscreen.js';
+
