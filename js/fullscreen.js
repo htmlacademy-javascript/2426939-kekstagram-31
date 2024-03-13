@@ -1,6 +1,7 @@
 import { isEscapeKey } from './util.js';
 import { pictures, photoData } from './thumbnails.js';
 
+const LIMIT_OF_COMMENT = 5;
 const body = document.querySelector('body');
 const popup = document.querySelector('.big-picture');
 const image = popup.querySelector('.big-picture__img');
@@ -61,6 +62,9 @@ const createComments = () => {
     }
     commentShownCount.textContent = count;
     socialComments.append(pictureDataFragment);
+    if (count === comments.length) {
+      loadMoreButton.classList.add('hidden');
+    }
   };
 };
 
@@ -68,10 +72,15 @@ const createComments = () => {
 pictures.addEventListener('click', (evt) => {
   let index = 0;
   let limit = 4;
-  const createSome = createComments();
+  const createElements = createComments();
 
   //Перебирает массив объектов с данными
   photoData.forEach(({ id, url, likes, description, comments }) => {
+    const onLoadButtonClick = () => {
+      index += LIMIT_OF_COMMENT;
+      limit += LIMIT_OF_COMMENT;
+      createElements(comments, index, limit);
+    };
     if (Number(evt.target.closest('.picture').dataset.id) === id) {
       image.children[0].src = url;
       likesCount.textContent = likes;
@@ -79,21 +88,21 @@ pictures.addEventListener('click', (evt) => {
       commentTotalCount.textContent = comments.length;
       body.classList.add('modal-open');
       socialComments.innerHTML = '';
-      createSome(comments, index, limit);
+      createElements(comments, index, limit);
       openPopup();
-      if (comments.length >= 5) {
-        loadMoreButton.addEventListener('click', () => {
-          index += 5;
-          limit += 5;
-          createSome(comments, index, limit);
-        });
+      if (comments.length > LIMIT_OF_COMMENT) {
+        loadMoreButton.classList.remove('hidden');
+        loadMoreButton.addEventListener('click', onLoadButtonClick);
+      } else {
+        loadMoreButton.classList.add('hidden');
       }
     }
-  });
 
-  //Событие, закрывающее окно
-  closeButton.addEventListener('click', () => {
-    closePopup();
+    //Событие, закрывающее окно
+    closeButton.addEventListener('click', () => {
+      closePopup();
+      loadMoreButton.removeEventListener('click', onLoadButtonClick);
+    });
   });
 });
 
