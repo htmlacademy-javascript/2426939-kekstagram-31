@@ -23,4 +23,14 @@ const getRandom = (min, max) => {
 
 const isEscapeKey = (evt) => evt.key === 'Escape';
 
-export { getRandomInteger, getRandom, isEscapeKey };
+const openPopup = (popup, onDocumentKeydown) => {
+  popup.classList.remove('hidden');
+  document.addEventListener('keydown', onDocumentKeydown);
+};
+
+const closePopup = (popup, onDocumentKeydown) => {
+  popup.classList.add('hidden');
+  document.removeEventListener('keydown', onDocumentKeydown);
+};
+
+export { getRandomInteger, getRandom, isEscapeKey, openPopup, closePopup };
