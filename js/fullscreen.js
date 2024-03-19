@@ -1,34 +1,26 @@
-import { isEscapeKey } from './util.js';
+import { isEscapeKey, openPopup, closePopup } from './util.js';
 import { pictures, photoData } from './thumbnails.js';
 
 const LIMIT_OF_COMMENT = 5;
 const body = document.querySelector('body');
-const popup = document.querySelector('.big-picture');
-const image = popup.querySelector('.big-picture__img');
-const likesCount = popup.querySelector('.likes-count');
-const commentShownCount = popup.querySelector('.social__comment-shown-count');
-const commentTotalCount = popup.querySelector('.social__comment-total-count');
-const descriptionPhoto = popup.querySelector('.social__caption');
-const socialComments = popup.querySelector('.social__comments');
-const closeButton = popup.querySelector('.big-picture__cancel');
-const loadMoreButton = popup.querySelector('.comments-loader');
+const bigPicture = document.querySelector('.big-picture');
+const popup = bigPicture.querySelector('.big-picture__preview');
+const image = bigPicture.querySelector('.big-picture__img');
+const likesCount = bigPicture.querySelector('.likes-count');
+const overlay = document.querySelector('.overlay');
+const commentShownCount = bigPicture.querySelector('.social__comment-shown-count');
+const commentTotalCount = bigPicture.querySelector('.social__comment-total-count');
+const descriptionPhoto = bigPicture.querySelector('.social__caption');
+const socialComments = bigPicture.querySelector('.social__comments');
+const closeButton = bigPicture.querySelector('.big-picture__cancel');
+const loadMoreButton = bigPicture.querySelector('.comments-loader');
 const pictureDataFragment = document.createDocumentFragment();
 
 const onDocumentKeydown = (evt) => {
   if (isEscapeKey(evt)) {
     evt.preventDefault();
-    popup.classList.add('hidden');
+    bigPicture.classList.add('hidden');
   }
-};
-
-const openPopup = () => {
-  popup.classList.remove('hidden');
-  document.addEventListener('keydown', onDocumentKeydown);
-};
-
-const closePopup = () => {
-  popup.classList.add('hidden');
-  document.removeEventListener('keydown', onDocumentKeydown);
 };
 
 // Создает комментарий
@@ -81,6 +73,11 @@ pictures.addEventListener('click', (evt) => {
       limit += LIMIT_OF_COMMENT;
       createElements(comments, index, limit);
     };
+    const modalClose = () => {
+      closePopup(bigPicture, onDocumentKeydown);
+      body.classList.remove('modal-open');
+      loadMoreButton.removeEventListener('click', onLoadButtonClick);
+    };
     if (Number(evt.target.closest('.picture').dataset.id) === id) {
       image.children[0].src = url;
       likesCount.textContent = likes;
@@ -89,7 +86,7 @@ pictures.addEventListener('click', (evt) => {
       body.classList.add('modal-open');
       socialComments.innerHTML = '';
       createElements(comments, index, limit);
-      openPopup();
+      openPopup(bigPicture, onDocumentKeydown);
       if (comments.length > LIMIT_OF_COMMENT) {
         loadMoreButton.classList.remove('hidden');
         loadMoreButton.addEventListener('click', onLoadButtonClick);
@@ -97,12 +94,11 @@ pictures.addEventListener('click', (evt) => {
         loadMoreButton.classList.add('hidden');
       }
     }
-
-    //Событие, закрывающее окно
-    closeButton.addEventListener('click', () => {
-      closePopup();
-      loadMoreButton.removeEventListener('click', onLoadButtonClick);
-    });
+    closeButton.addEventListener('click', modalClose);
+    overlay.addEventListener('click', modalClose);
   });
 });
 
+popup.addEventListener('click', (evt) => {
+  evt.stopPropagation();
+});
