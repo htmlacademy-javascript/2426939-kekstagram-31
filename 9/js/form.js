@@ -58,20 +58,9 @@ const validateHashtagAmount = () => hashtag.value.trim().split(' ').length <= LI
 
 // Функция для проверки одинаковых хэштегов
 const validateHashtagSimilar = (array) => {
-  array = hashtag.value.trim().split(' ');
-  for (let i = 0; i < array.length; i++) {
-    const tag = array[i];
-    let count = 0;
-    for(let j = 0; j < array.length; j++) {
-      if (tag === array[j]) {
-        count++;
-      }
-    }
-    if(count > 1) {
-      return false;
-    }
-  }
-  return true;
+  const hashtagArr = array.toLowerCase().trim().split(' ');
+  const uniqueHashtags = [...new Set(hashtagArr)];
+  return hashtagArr.length === uniqueHashtags.length;
 };
 
 // Функция для проверки количества символов в комментарии
