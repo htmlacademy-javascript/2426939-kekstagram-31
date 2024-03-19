@@ -6,7 +6,7 @@ const form = document.querySelector('.img-upload__form');
 const uploadButtonClose = popup.querySelector('.img-upload__cancel');
 const hashtag = document.querySelector('.text__hashtags');
 const textComment = popup.querySelector('.text__description');
-const regex = /^#[a-zа-яё0-9]{1,19}$/i;
+const REGEX = /^#[a-zа-яё0-9]{1,19}$/i;
 const LIMIT_OF_HASHTAG = 5;
 const LIMIT_OF_COMMENT = 140;
 
@@ -46,7 +46,7 @@ const validateHashtagName = (array) => {
     return true;
   }
   for (let i = 0; i < array.length; i++) {
-    if (!regex.test(array[i])) {
+    if (!REGEX.test(array[i])) {
       return false;
     }
   }
