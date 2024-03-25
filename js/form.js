@@ -1,4 +1,5 @@
 import { isEscapeKey, openPopup, closePopup } from './util.js';
+import { sendData } from './api.js';
 const body = document.querySelector('body');
 const uploadButton = document.querySelector('.img-upload__input');
 const popup = document.querySelector('.img-upload__overlay');
@@ -6,6 +7,13 @@ const form = document.querySelector('.img-upload__form');
 const uploadButtonClose = popup.querySelector('.img-upload__cancel');
 const hashtag = document.querySelector('.text__hashtags');
 const textComment = popup.querySelector('.text__description');
+const templateSuccess = document.querySelector('#success').content;
+const templateError = document.querySelector('#error').content;
+const templateSuccessForm = templateSuccess.querySelector('.success');
+const templateErrorForm = templateError.querySelector('.error');
+const errorButton = templateErrorForm.querySelector('.error__button');
+const successButton = templateSuccessForm.querySelector('.success__button');
+
 const REGEX = /^#[a-zа-яё0-9]{1,19}$/i;
 const LIMIT_OF_HASHTAG = 5;
 const LIMIT_OF_COMMENT = 140;
@@ -28,6 +36,7 @@ const onDocumentKeydown = (evt) => {
     }
   }
 };
+
 
 uploadButton.addEventListener('change', () => {
   openPopup(popup, onDocumentKeydown);
@@ -90,10 +99,37 @@ pristine.addValidator(
   'Превышен предел по количеству символов'
 );
 
-form.addEventListener('submit', (evt) => {
-  const valid = pristine.validate();
-  if (!valid) {
+const createErrorForm = () => {
+  openPopup(templateErrorForm, onDocumentKeydown);
+  body.append(templateErrorForm);
+};
+
+const createSuccess = (evt, onSuccess) => {
+  onSuccess(popup, onDocumentKeydown);
+  evt.target.reset();
+  body.append(templateSuccessForm);
+};
+
+const setUserForm = (onSuccess) => {
+  form.addEventListener('submit', (evt) => {
     evt.preventDefault();
-  }
+    const valid = pristine.validate();
+    if (valid) {
+      sendData(createSuccess, createErrorForm, onSuccess, new FormData(evt.target), evt);
+    }
+  });
+};
+
+errorButton.addEventListener('click', () => {
+  closePopup(templateErrorForm, onDocumentKeydown);
+  templateErrorForm.remove();
 });
+
+successButton.addEventListener('click', () => {
+  closePopup(templateSuccessForm, onDocumentKeydown);
+  templateSuccessForm.remove();
+});
+
+setUserForm(closePopup);
+
 
