@@ -102,7 +102,7 @@ pictures.addEventListener('click', (evt) => {
       overlay.addEventListener('click', modalClose);
     });
   };
-  getData(getFullscreen, createErrorComment);
+  getData(createErrorComment).then((data) => getFullscreen(data));
 });
 
 popup.addEventListener('click', (evt) => {

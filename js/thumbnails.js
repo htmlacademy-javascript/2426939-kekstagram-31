@@ -3,14 +3,14 @@ const body = document.querySelector('body');
 const template = document.querySelector('#picture').content;
 const templatePicture = template.querySelector('.picture');
 const templateDataError = document.querySelector('#data-error').content.querySelector('.data-error');
-
+const errorDuration = 5000;
 let count = 0;
 
 const createErrorComment = (() => {
   body.append(templateDataError);
   setTimeout(() => {
     templateDataError.remove();
-  }, 5000);
+  }, errorDuration);
 });
 
 const renderPhotoList = (photoData) => {

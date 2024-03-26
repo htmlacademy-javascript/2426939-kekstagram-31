@@ -3,6 +3,7 @@ import { sendData } from './api.js';
 const body = document.querySelector('body');
 const uploadButton = document.querySelector('.img-upload__input');
 const popup = document.querySelector('.img-upload__overlay');
+const sliderElement = document.querySelector('.effect-level__slider');
 const form = document.querySelector('.img-upload__form');
 const uploadButtonClose = popup.querySelector('.img-upload__cancel');
 const hashtag = document.querySelector('.text__hashtags');
@@ -32,6 +33,7 @@ const onDocumentKeydown = (evt) => {
       evt.stopPropagation();
     } else {
       popup.classList.add('hidden');
+      sliderElement.noUiSlider.reset();
       uploadButton.value = '';
     }
   }
@@ -45,6 +47,7 @@ uploadButton.addEventListener('change', () => {
 
 uploadButtonClose.addEventListener('click', () => {
   closePopup(popup, onDocumentKeydown);
+  sliderElement.noUiSlider.reset();
   body.classList.remove('modal-open');
 });
 
@@ -115,7 +118,10 @@ const setUserForm = (onSuccess) => {
     evt.preventDefault();
     const valid = pristine.validate();
     if (valid) {
-      sendData(createSuccess, createErrorForm, onSuccess, new FormData(evt.target), evt);
+      sendData(createErrorForm, new FormData(evt.target))
+        .then(() => {
+          createSuccess(evt, onSuccess);
+        });
     }
   });
 };
@@ -128,6 +134,7 @@ errorButton.addEventListener('click', () => {
 successButton.addEventListener('click', () => {
   closePopup(templateSuccessForm, onDocumentKeydown);
   templateSuccessForm.remove();
+  sliderElement.noUiSlider.reset();
 });
 
 setUserForm(closePopup);
