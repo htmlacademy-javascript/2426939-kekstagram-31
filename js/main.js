@@ -6,4 +6,8 @@ import './util.js';
 import './image-scale.js';
 import './range-slider.js';
 
-getData(createErrorComment).then((data) => renderPhotoList(data));
+getData()
+  .then((data) => renderPhotoList(data))
+  .catch(() => {
+    createErrorComment();
+  });

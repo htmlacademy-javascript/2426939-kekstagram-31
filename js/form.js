@@ -13,7 +13,7 @@ const templateError = document.querySelector('#error').content;
 const templateSuccessForm = templateSuccess.querySelector('.success');
 const templateErrorForm = templateError.querySelector('.error');
 const errorButton = templateErrorForm.querySelector('.error__button');
-const successButton = templateSuccessForm.querySelector('.success__button');
+
 
 const REGEX = /^#[a-zа-яё0-9]{1,19}$/i;
 const LIMIT_OF_HASHTAG = 5;
@@ -35,6 +35,9 @@ const onDocumentKeydown = (evt) => {
       popup.classList.add('hidden');
       sliderElement.noUiSlider.reset();
       uploadButton.value = '';
+    }
+    if (document.classList.contains('success')) {
+      popup.classList.add('hidden');
     }
   }
 };
@@ -102,25 +105,43 @@ pristine.addValidator(
   'Превышен предел по количеству символов'
 );
 
-const createErrorForm = () => {
-  openPopup(templateErrorForm, onDocumentKeydown);
-  body.append(templateErrorForm);
+const closeMessage = (evt) => {
+  evt.stopPropagation();
+  const existElement = document.querySelector('.success') || document.querySelector('.error');
+  const closeButton = existElement.querySelector('button');
+  if (evt.target === existElement || evt.target === closeButton || isEscapeKey(evt)) {
+    existElement.remove();
+    body.removeEventListener('click', closeMessage);
+    body.removeEventListener('keydown', closeMessage);
+  }
 };
 
-const createSuccess = (evt, onSuccess) => {
-  onSuccess(popup, onDocumentKeydown);
+const appendMessage = (template) => {
+  const messageNode = template.cloneNode(true);
+  body.append(messageNode);
+  body.addEventListener('click', closeMessage);
+  body.addEventListener('keydown', closeMessage);
+};
+
+const resetData = (evt) => {
   evt.target.reset();
-  body.append(templateSuccessForm);
+  sliderElement.noUiSlider.reset();
 };
 
-const setUserForm = (onSuccess) => {
+const setUserForm = () => {
   form.addEventListener('submit', (evt) => {
     evt.preventDefault();
     const valid = pristine.validate();
     if (valid) {
-      sendData(createErrorForm, new FormData(evt.target))
+      sendData(new FormData(evt.target))
         .then(() => {
-          createSuccess(evt, onSuccess);
+          appendMessage(templateSuccessForm);
+          popup.classList.add('hidden');
+          body.classList.remove('modal-open');
+          resetData(evt);
+        })
+        .catch(() => {
+          appendMessage(templateErrorForm);
         });
     }
   });
@@ -131,12 +152,6 @@ errorButton.addEventListener('click', () => {
   templateErrorForm.remove();
 });
 
-successButton.addEventListener('click', () => {
-  closePopup(templateSuccessForm, onDocumentKeydown);
-  templateSuccessForm.remove();
-  sliderElement.noUiSlider.reset();
-});
-
-setUserForm(closePopup);
+setUserForm();
 
 
