@@ -1,5 +1,7 @@
 import { isEscapeKey, openPopup, closePopup } from './util.js';
-import { pictures, photoData } from './thumbnails.js';
+import { pictures, createErrorComment } from './thumbnails.js';
+import { getData } from './api.js';
+
 
 const LIMIT_OF_COMMENT = 5;
 const body = document.querySelector('body');
@@ -8,6 +10,7 @@ const popup = bigPicture.querySelector('.big-picture__preview');
 const image = bigPicture.querySelector('.big-picture__img');
 const likesCount = bigPicture.querySelector('.likes-count');
 const overlay = document.querySelector('.overlay');
+const imgUpload = document.querySelector('.img-upload');
 const commentShownCount = bigPicture.querySelector('.social__comment-shown-count');
 const commentTotalCount = bigPicture.querySelector('.social__comment-total-count');
 const descriptionPhoto = bigPicture.querySelector('.social__caption');
@@ -67,38 +70,45 @@ pictures.addEventListener('click', (evt) => {
   const createElements = createComments();
 
   //Перебирает массив объектов с данными
-  photoData.forEach(({ id, url, likes, description, comments }) => {
-    const onLoadButtonClick = () => {
-      index += LIMIT_OF_COMMENT;
-      limit += LIMIT_OF_COMMENT;
-      createElements(comments, index, limit);
-    };
-    const modalClose = () => {
-      closePopup(bigPicture, onDocumentKeydown);
-      body.classList.remove('modal-open');
-      loadMoreButton.removeEventListener('click', onLoadButtonClick);
-    };
-    if (Number(evt.target.closest('.picture').dataset.id) === id) {
-      image.children[0].src = url;
-      likesCount.textContent = likes;
-      descriptionPhoto.textContent = description;
-      commentTotalCount.textContent = comments.length;
-      body.classList.add('modal-open');
-      socialComments.innerHTML = '';
-      createElements(comments, index, limit);
-      openPopup(bigPicture, onDocumentKeydown);
-      if (comments.length > LIMIT_OF_COMMENT) {
-        loadMoreButton.classList.remove('hidden');
-        loadMoreButton.addEventListener('click', onLoadButtonClick);
-      } else {
-        loadMoreButton.classList.add('hidden');
+  const getFullscreen = (photoData) => {
+    photoData.forEach(({ id, url, likes, description, comments }) => {
+      const onLoadButtonClick = () => {
+        index += LIMIT_OF_COMMENT;
+        limit += LIMIT_OF_COMMENT;
+        createElements(comments, index, limit);
+      };
+      const modalClose = () => {
+        closePopup(bigPicture, onDocumentKeydown);
+        body.classList.remove('modal-open');
+        loadMoreButton.removeEventListener('click', onLoadButtonClick);
+      };
+      if (Number(evt.target.closest('.picture').dataset.id) === id) {
+        image.children[0].src = url;
+        likesCount.textContent = likes;
+        descriptionPhoto.textContent = description;
+        commentTotalCount.textContent = comments.length;
+        body.classList.add('modal-open');
+        socialComments.innerHTML = '';
+        createElements(comments, index, limit);
+        openPopup(bigPicture, onDocumentKeydown);
+        if (comments.length > LIMIT_OF_COMMENT) {
+          loadMoreButton.classList.remove('hidden');
+          loadMoreButton.addEventListener('click', onLoadButtonClick);
+        } else {
+          loadMoreButton.classList.add('hidden');
+        }
       }
-    }
-    closeButton.addEventListener('click', modalClose);
-    overlay.addEventListener('click', modalClose);
-  });
+      closeButton.addEventListener('click', modalClose);
+      overlay.addEventListener('click', modalClose);
+    });
+  };
+  getData(createErrorComment).then((data) => getFullscreen(data));
 });
 
 popup.addEventListener('click', (evt) => {
+  evt.stopPropagation();
+});
+
+imgUpload.addEventListener('click', (evt) => {
   evt.stopPropagation();
 });

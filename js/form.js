@@ -1,11 +1,20 @@
 import { isEscapeKey, openPopup, closePopup } from './util.js';
+import { sendData } from './api.js';
 const body = document.querySelector('body');
 const uploadButton = document.querySelector('.img-upload__input');
 const popup = document.querySelector('.img-upload__overlay');
+const sliderElement = document.querySelector('.effect-level__slider');
 const form = document.querySelector('.img-upload__form');
 const uploadButtonClose = popup.querySelector('.img-upload__cancel');
 const hashtag = document.querySelector('.text__hashtags');
 const textComment = popup.querySelector('.text__description');
+const templateSuccess = document.querySelector('#success').content;
+const templateError = document.querySelector('#error').content;
+const templateSuccessForm = templateSuccess.querySelector('.success');
+const templateErrorForm = templateError.querySelector('.error');
+const errorButton = templateErrorForm.querySelector('.error__button');
+
+
 const REGEX = /^#[a-zа-яё0-9]{1,19}$/i;
 const LIMIT_OF_HASHTAG = 5;
 const LIMIT_OF_COMMENT = 140;
@@ -24,10 +33,15 @@ const onDocumentKeydown = (evt) => {
       evt.stopPropagation();
     } else {
       popup.classList.add('hidden');
+      sliderElement.noUiSlider.reset();
       uploadButton.value = '';
+    }
+    if (document.classList.contains('success')) {
+      popup.classList.add('hidden');
     }
   }
 };
+
 
 uploadButton.addEventListener('change', () => {
   openPopup(popup, onDocumentKeydown);
@@ -36,6 +50,7 @@ uploadButton.addEventListener('change', () => {
 
 uploadButtonClose.addEventListener('click', () => {
   closePopup(popup, onDocumentKeydown);
+  sliderElement.noUiSlider.reset();
   body.classList.remove('modal-open');
 });
 
@@ -90,10 +105,53 @@ pristine.addValidator(
   'Превышен предел по количеству символов'
 );
 
-form.addEventListener('submit', (evt) => {
-  const valid = pristine.validate();
-  if (!valid) {
-    evt.preventDefault();
+const closeMessage = (evt) => {
+  evt.stopPropagation();
+  const existElement = document.querySelector('.success') || document.querySelector('.error');
+  const closeButton = existElement.querySelector('button');
+  if (evt.target === existElement || evt.target === closeButton || isEscapeKey(evt)) {
+    existElement.remove();
+    body.removeEventListener('click', closeMessage);
+    body.removeEventListener('keydown', closeMessage);
   }
+};
+
+const appendMessage = (template) => {
+  const messageNode = template.cloneNode(true);
+  body.append(messageNode);
+  body.addEventListener('click', closeMessage);
+  body.addEventListener('keydown', closeMessage);
+};
+
+const resetData = (evt) => {
+  evt.target.reset();
+  sliderElement.noUiSlider.reset();
+};
+
+const setUserForm = () => {
+  form.addEventListener('submit', (evt) => {
+    evt.preventDefault();
+    const valid = pristine.validate();
+    if (valid) {
+      sendData(new FormData(evt.target))
+        .then(() => {
+          appendMessage(templateSuccessForm);
+          popup.classList.add('hidden');
+          body.classList.remove('modal-open');
+          resetData(evt);
+        })
+        .catch(() => {
+          appendMessage(templateErrorForm);
+        });
+    }
+  });
+};
+
+errorButton.addEventListener('click', () => {
+  closePopup(templateErrorForm, onDocumentKeydown);
+  templateErrorForm.remove();
 });
+
+setUserForm();
+
 
