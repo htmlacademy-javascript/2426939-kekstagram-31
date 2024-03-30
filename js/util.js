@@ -1,5 +1,5 @@
 const NUMBER_SYSTEM_CALCULUS = 10;
-const MIN;
+const MIN = 0;
 function getRandomInteger(min, max) {
   const lower = Math.ceil(Math.min(Math.abs(min), Math.abs(max)));
   const upper = Math.floor(Math.max(Math.abs(min), Math.abs(max)));
