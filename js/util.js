@@ -2,7 +2,6 @@ function getRandomInteger(min, max) {
   const lower = Math.ceil(Math.min(Math.abs(min), Math.abs(max)));
   const upper = Math.floor(Math.max(Math.abs(min), Math.abs(max)));
   const result = Math.random() * (upper - lower + 1) + lower;
-
   return Math.floor(result);
 }
 
@@ -33,4 +32,30 @@ const closePopup = (popup, onDocumentKeydown) => {
   document.removeEventListener('keydown', onDocumentKeydown);
 };
 
-export { getRandomInteger, getRandom, isEscapeKey, openPopup, closePopup };
+const getNumber = (string) => {
+  let number = '';
+  string = string.toString().replaceAll(' ', '');
+  for (let i = 0; i < string.length; i++) {
+    if (isNaN(string[i])) {
+      number += '';
+    } else {
+      number += parseInt(string[i], 10);
+    }
+  }
+  if (string < 0) {
+    number *= 1;
+  }
+  return (number === '') ? 'NaN' : number;
+};
+
+function debounce(callback, timeoutDelay = 500) {
+  let timeoutId;
+
+  return (...rest) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => callback.apply(this, rest), timeoutDelay);
+  };
+}
+
+
+export { getRandomInteger, getRandom, isEscapeKey, openPopup, closePopup, debounce, getNumber };
