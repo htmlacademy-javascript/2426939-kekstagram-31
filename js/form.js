@@ -1,5 +1,6 @@
 import { isEscapeKey, openPopup, closePopup } from './util.js';
 import { sendData } from './api.js';
+const FILE_TYPES = ['jpg', 'png', 'jpeg'];
 const body = document.querySelector('body');
 const uploadButton = document.querySelector('.img-upload__input');
 const popup = document.querySelector('.img-upload__overlay');
@@ -7,6 +8,7 @@ const sliderElement = document.querySelector('.effect-level__slider');
 const form = document.querySelector('.img-upload__form');
 const uploadButtonClose = popup.querySelector('.img-upload__cancel');
 const hashtag = document.querySelector('.text__hashtags');
+const image = document.querySelector('.img-upload__preview').children[0];
 const textComment = popup.querySelector('.text__description');
 const templateSuccess = document.querySelector('#success').content;
 const templateError = document.querySelector('#error').content;
@@ -42,10 +44,20 @@ const onDocumentKeydown = (evt) => {
   }
 };
 
+const addPhoto = () => {
+  const file = uploadButton.files[0];
+  const fileName = file.name.toLowerCase();
+  const matches = FILE_TYPES.some((el) => fileName.endsWith(el));
+  if (matches) {
+    image.src = URL.createObjectURL(file);
+  }
+};
+
 
 uploadButton.addEventListener('change', () => {
   openPopup(popup, onDocumentKeydown);
   body.classList.add('modal-open');
+  addPhoto();
 });
 
 uploadButtonClose.addEventListener('click', () => {
