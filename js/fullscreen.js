@@ -99,6 +99,7 @@ pictures.addEventListener('click', (evt) => {
         }
       }
       closeButton.addEventListener('click', modalClose);
+      document.addEventListener('keydown', modalClose);
       overlay.addEventListener('click', modalClose);
     });
   };
