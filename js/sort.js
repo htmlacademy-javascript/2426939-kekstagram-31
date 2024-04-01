@@ -1,13 +1,12 @@
 import { renderPhotoList } from './thumbnails.js';
 import { debounce } from './util.js';
-
-const imgFilters = document.querySelector('.img-filters');
-let currentFilter = 'filter-default';
-const debounceRender = debounce(renderPhotoList);
-let photos = [];
 const MIN_PHOTO_COUNT = 0;
 const MAX_PHOTO_COUNT = 10;
 const NUMBER = 0.5;
+const imgFilters = document.querySelector('.img-filters');
+const debounceRender = debounce(renderPhotoList);
+let currentFilter = 'filter-default';
+let photos = [];
 
 const addSort = () => {
   let sortPhotos = [];

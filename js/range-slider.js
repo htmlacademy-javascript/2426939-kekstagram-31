@@ -2,7 +2,7 @@ const sliderContainer = document.querySelector('.img-upload__effect-level');
 const sliderElement = document.querySelector('.effect-level__slider');
 const inputValue = document.querySelector('.effect-level__value');
 const items = document.querySelectorAll('.effects__item');
-const image = document.querySelector('.img-upload__preview');
+const image = document.querySelector('.img-upload__preview').children[0];
 const STEP = 0.1;
 const MARVIN_STEP = 1;
 const MIN = 0;
@@ -60,11 +60,11 @@ const changeSliderOptions = (min, max, step) => {
 for (let i = 0; i < items.length; i++) {
   items[i].addEventListener('click', () => {
     inputValue.value = 0;
-    sliderContainer.classList.remove('hidden');
     if (i === 0) {
       sliderContainer.classList.add('hidden');
       image.style.filter = '';
     } else {
+      sliderContainer.classList.remove('hidden');
       switch (i) {
         case 1:
           changeSliderOptions(MIN, MAX, STEP);

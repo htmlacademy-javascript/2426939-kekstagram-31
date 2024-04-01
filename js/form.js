@@ -1,10 +1,13 @@
 import { isEscapeKey, openPopup, closePopup } from './util.js';
 import { sendData } from './api.js';
+import { scaleReset } from './image-scale.js';
 const FILE_TYPES = ['jpg', 'png', 'jpeg'];
 const body = document.querySelector('body');
 const uploadButton = document.querySelector('.img-upload__input');
+const sumbitButton = document.querySelector('.img-upload__submit');
 const popup = document.querySelector('.img-upload__overlay');
 const sliderElement = document.querySelector('.effect-level__slider');
+const sliderContainer = document.querySelector('.img-upload__effect-level');
 const form = document.querySelector('.img-upload__form');
 const uploadButtonClose = popup.querySelector('.img-upload__cancel');
 const hashtag = document.querySelector('.text__hashtags');
@@ -15,8 +18,6 @@ const templateError = document.querySelector('#error').content;
 const templateSuccessForm = templateSuccess.querySelector('.success');
 const templateErrorForm = templateError.querySelector('.error');
 const errorButton = templateErrorForm.querySelector('.error__button');
-
-
 const REGEX = /^#[a-zа-яё0-9]{1,19}$/i;
 const LIMIT_OF_HASHTAG = 5;
 const LIMIT_OF_COMMENT = 140;
@@ -26,7 +27,19 @@ const pristine = new Pristine(form, {
   classTo: 'img-upload__field-wrapper',
   errorTextParent: 'img-upload__field-wrapper',
   errorTextClass: 'information__error'
-});
+}, false);
+
+const SubmitButtonTexts = {
+  IDLE: 'Опубликовать',
+  SENDING: 'Публикуется...'
+};
+
+const resetAllData = () => {
+  sliderElement.noUiSlider.reset();
+  body.classList.remove('modal-open');
+  scaleReset();
+  form.reset();
+};
 
 const onDocumentKeydown = (evt) => {
   if (isEscapeKey(evt)) {
@@ -34,12 +47,8 @@ const onDocumentKeydown = (evt) => {
     if (evt.target === hashtag || evt.target === textComment) {
       evt.stopPropagation();
     } else {
-      popup.classList.add('hidden');
-      sliderElement.noUiSlider.reset();
-      uploadButton.value = '';
-    }
-    if (document.classList.contains('success')) {
-      popup.classList.add('hidden');
+      closePopup(popup, onDocumentKeydown);
+      resetAllData();
     }
   }
 };
@@ -53,22 +62,31 @@ const addPhoto = () => {
   }
 };
 
+const blockSubmitButton = () => {
+  sumbitButton.disabled = true;
+  sumbitButton.textContent = SubmitButtonTexts.SENDING;
+};
+
+const unblockSubmitButton = () => {
+  sumbitButton.disabled = false;
+  sumbitButton.textContent = SubmitButtonTexts.IDLE;
+};
 
 uploadButton.addEventListener('change', () => {
   openPopup(popup, onDocumentKeydown);
+  sliderContainer.classList.add('hidden');
   body.classList.add('modal-open');
   addPhoto();
 });
 
 uploadButtonClose.addEventListener('click', () => {
   closePopup(popup, onDocumentKeydown);
-  sliderElement.noUiSlider.reset();
-  body.classList.remove('modal-open');
+  resetAllData();
 });
 
 // Функция для проверки валидности хэштега
 const validateHashtagName = (array) => {
-  array = hashtag.value.trim().split(' ');
+  array = hashtag.value.trim().split(' ').filter(Boolean);
   if (hashtag.value === '') {
     return true;
   }
@@ -81,11 +99,11 @@ const validateHashtagName = (array) => {
 };
 
 // Функция для проверки количества введеных хэштегов
-const validateHashtagAmount = () => hashtag.value.trim().split(' ').length <= LIMIT_OF_HASHTAG;
+const validateHashtagAmount = () => hashtag.value.trim().split(' ').filter(Boolean).length <= LIMIT_OF_HASHTAG;
 
 // Функция для проверки одинаковых хэштегов
 const validateHashtagSimilar = (array) => {
-  const hashtagArr = array.toLowerCase().trim().split(' ');
+  const hashtagArr = array.toLowerCase().trim().split(' ').filter(Boolean);
   const uniqueHashtags = [...new Set(hashtagArr)];
   return hashtagArr.length === uniqueHashtags.length;
 };
@@ -135,26 +153,26 @@ const appendMessage = (template) => {
   body.addEventListener('keydown', closeMessage);
 };
 
-const resetData = (evt) => {
-  evt.target.reset();
-  sliderElement.noUiSlider.reset();
-};
-
 const setUserForm = () => {
   form.addEventListener('submit', (evt) => {
     evt.preventDefault();
     const valid = pristine.validate();
     if (valid) {
+      blockSubmitButton();
+      pristine.reset();
       sendData(new FormData(evt.target))
         .then(() => {
           appendMessage(templateSuccessForm);
           popup.classList.add('hidden');
           body.classList.remove('modal-open');
-          resetData(evt);
+          evt.target.reset();
+          sliderElement.noUiSlider.reset();
+          form.reset();
         })
         .catch(() => {
           appendMessage(templateErrorForm);
-        });
+        })
+        .finally(() => unblockSubmitButton());
     }
   });
 };
