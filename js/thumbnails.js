@@ -1,12 +1,10 @@
 import { getNumber } from './util';
-
 const pictures = document.querySelector('.pictures');
 const body = document.querySelector('body');
 const template = document.querySelector('#picture').content;
 const templatePicture = template.querySelector('.picture');
 const templateDataError = document.querySelector('#data-error').content.querySelector('.data-error');
 const errorDuration = 5000;
-
 
 const createErrorComment = (() => {
   body.append(templateDataError);

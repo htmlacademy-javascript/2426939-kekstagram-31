@@ -1,34 +1,29 @@
-const STEP = 25;
-const MIN_LIMIT = 25;
-const MAX_LIMIT = 100;
+const STEP = 0.25;
+const MAX_NUMBER = 1;
+const NUMBER = 100;
 const scaleSmallerButton = document.querySelector('.scale__control--smaller');
 const scaleBiggerButton = document.querySelector('.scale__control--bigger');
 const scaleInputValue = document.querySelector('.scale__control--value');
-const image = document.querySelector('.img-upload__preview');
-let number = parseInt(scaleInputValue.value, 10);
+const image = document.querySelector('.img-upload__preview').children[0];
+let limit = 1;
 
-const changeRange = () => {
-  image.style.transform = `scale(${number / 100})`;
+const scaleReset = () => {
+  limit = 1;
+  image.style.transform = `scale(${limit})`;
 };
 
 scaleSmallerButton.addEventListener('click', () => {
-  if (number === MIN_LIMIT) {
-    scaleSmallerButton.disabled = true;
-  } else {
-    scaleBiggerButton.disabled = false;
-    number -= STEP;
-    scaleInputValue.value = `${number}%`;
-    changeRange();
+  if (limit > STEP) {
+    image.style.transform = `scale(${limit -= STEP})`;
+    scaleInputValue.value = `${limit * NUMBER}%`;
   }
 });
 
 scaleBiggerButton.addEventListener('click', () => {
-  if (number === MAX_LIMIT) {
-    scaleBiggerButton.disabled = true;
-  } else {
-    scaleSmallerButton.disabled = false;
-    number += STEP;
-    scaleInputValue.value = `${number}%`;
-    changeRange();
+  if (limit < MAX_NUMBER) {
+    image.style.transform = `scale(${limit += STEP})`;
+    scaleInputValue.value = `${limit * NUMBER}%`;
   }
 });
+
+export {scaleReset};

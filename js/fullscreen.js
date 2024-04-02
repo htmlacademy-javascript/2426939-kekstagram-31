@@ -2,7 +2,6 @@ import { isEscapeKey, openPopup, closePopup } from './util.js';
 import { pictures, createErrorComment } from './thumbnails.js';
 import { getData } from './api.js';
 
-
 const LIMIT_OF_COMMENT = 5;
 const body = document.querySelector('body');
 const bigPicture = document.querySelector('.big-picture');
@@ -22,6 +21,7 @@ const pictureDataFragment = document.createDocumentFragment();
 const onDocumentKeydown = (evt) => {
   if (isEscapeKey(evt)) {
     evt.preventDefault();
+    body.classList.remove('modal-open');
     bigPicture.classList.add('hidden');
   }
 };
@@ -99,6 +99,7 @@ pictures.addEventListener('click', (evt) => {
         }
       }
       closeButton.addEventListener('click', modalClose);
+      document.addEventListener('keydown', modalClose);
       overlay.addEventListener('click', modalClose);
     });
   };
