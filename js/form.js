@@ -2,6 +2,13 @@ import { isEscapeKey, openPopup, closePopup } from './util.js';
 import { sendData } from './api.js';
 import { scaleReset } from './image-scale.js';
 const FILE_TYPES = ['jpg', 'png', 'jpeg'];
+const REGEX = /^#[a-zа-яё0-9]{1,19}$/i;
+const LIMIT_OF_HASHTAG = 5;
+const LIMIT_OF_COMMENT = 140;
+const SubmitButtonTexts = {
+  IDLE: 'Опубликовать',
+  SENDING: 'Публикуется...'
+};
 const body = document.querySelector('body');
 const uploadButton = document.querySelector('.img-upload__input');
 const sumbitButton = document.querySelector('.img-upload__submit');
@@ -18,9 +25,7 @@ const templateError = document.querySelector('#error').content;
 const templateSuccessForm = templateSuccess.querySelector('.success');
 const templateErrorForm = templateError.querySelector('.error');
 const errorButton = templateErrorForm.querySelector('.error__button');
-const REGEX = /^#[a-zа-яё0-9]{1,19}$/i;
-const LIMIT_OF_HASHTAG = 5;
-const LIMIT_OF_COMMENT = 140;
+const effectPreviews = document.querySelectorAll('.effects__preview  ');
 
 // Создание экземпляра валидатора
 const pristine = new Pristine(form, {
@@ -28,11 +33,6 @@ const pristine = new Pristine(form, {
   errorTextParent: 'img-upload__field-wrapper',
   errorTextClass: 'information__error'
 }, false);
-
-const SubmitButtonTexts = {
-  IDLE: 'Опубликовать',
-  SENDING: 'Публикуется...'
-};
 
 const resetAllData = () => {
   sliderElement.noUiSlider.reset();
@@ -58,6 +58,9 @@ const addPhoto = () => {
   const fileName = file.name.toLowerCase();
   const matches = FILE_TYPES.some((el) => fileName.endsWith(el));
   if (matches) {
+    effectPreviews.forEach((el) => {
+      el.style.backgroundImage = `url(${URL.createObjectURL(file)})`;
+    });
     image.src = URL.createObjectURL(file);
   }
 };
