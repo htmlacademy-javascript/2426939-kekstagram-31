@@ -8,16 +8,16 @@ function getRandomInteger(min, max) {
 }
 
 const getRandom = (min, max) => {
-  const array = [];
+  const arrays = [];
   return function () {
     let number = getRandomInteger(min, max);
-    if (array.length >= max - min + 1) {
+    if (arrays.length >= max - min + 1) {
       return null;
     }
-    while (array.includes(number)) {
+    while (arrays.includes(number)) {
       number = getRandomInteger(min, max);
     }
-    array.push(number);
+    arrays.push(number);
     return number;
   };
 };
