@@ -53,8 +53,19 @@ const changeSliderOptions = (min, max, step) => {
       min: min,
       max: max
     },
-    start: 0,
-    step: step
+    start: 100,
+    step: step,
+    format: {
+      to: function (value) {
+        if (Number.isInteger(value)) {
+          return value.toFixed(0);
+        }
+        return value.toFixed(1);
+      },
+      from: function (value) {
+        return parseFloat(value);
+      },
+    },
   });
 };
 

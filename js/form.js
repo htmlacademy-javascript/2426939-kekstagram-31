@@ -56,10 +56,10 @@ const onDocumentKeydown = (evt) => {
 const addPhoto = () => {
   const file = uploadButton.files[0];
   const fileName = file.name.toLowerCase();
-  const matches = FILE_TYPES.some((el) => fileName.endsWith(el));
+  const matches = FILE_TYPES.some((element) => fileName.endsWith(element));
   if (matches) {
-    effectPreviews.forEach((el) => {
-      el.style.backgroundImage = `url(${URL.createObjectURL(file)})`;
+    effectPreviews.forEach((element) => {
+      element.style.backgroundImage = `url(${URL.createObjectURL(file)})`;
     });
     image.src = URL.createObjectURL(file);
   }
@@ -88,13 +88,13 @@ uploadButtonClose.addEventListener('click', () => {
 });
 
 // Функция для проверки валидности хэштега
-const validateHashtagName = (array) => {
-  array = hashtag.value.trim().split(' ').filter(Boolean);
+const validateHashtagName = (hashtags) => {
+  hashtags = hashtag.value.trim().split(' ').filter(Boolean);
   if (hashtag.value === '') {
     return true;
   }
-  for (let i = 0; i < array.length; i++) {
-    if (!REGEX.test(array[i])) {
+  for (let i = 0; i < hashtags.length; i++) {
+    if (!REGEX.test(hashtags[i])) {
       return false;
     }
   }
@@ -105,8 +105,8 @@ const validateHashtagName = (array) => {
 const validateHashtagAmount = () => hashtag.value.trim().split(' ').filter(Boolean).length <= LIMIT_OF_HASHTAG;
 
 // Функция для проверки одинаковых хэштегов
-const validateHashtagSimilar = (array) => {
-  const hashtagArr = array.toLowerCase().trim().split(' ').filter(Boolean);
+const validateHashtagSimilar = (hashtags) => {
+  const hashtagArr = hashtags.toLowerCase().trim().split(' ').filter(Boolean);
   const uniqueHashtags = [...new Set(hashtagArr)];
   return hashtagArr.length === uniqueHashtags.length;
 };
@@ -138,22 +138,22 @@ pristine.addValidator(
   'Превышен предел по количеству символов'
 );
 
-const closeMessage = (evt) => {
+const onMessageClose = (evt) => {
   evt.stopPropagation();
   const existElement = document.querySelector('.success') || document.querySelector('.error');
   const closeButton = existElement.querySelector('button');
   if (evt.target === existElement || evt.target === closeButton || isEscapeKey(evt)) {
     existElement.remove();
-    body.removeEventListener('click', closeMessage);
-    body.removeEventListener('keydown', closeMessage);
+    body.removeEventListener('click', onMessageClose);
+    body.removeEventListener('keydown', onMessageClose);
   }
 };
 
 const appendMessage = (template) => {
   const messageNode = template.cloneNode(true);
   body.append(messageNode);
-  body.addEventListener('click', closeMessage);
-  body.addEventListener('keydown', closeMessage);
+  body.addEventListener('click', onMessageClose);
+  body.addEventListener('keydown', onMessageClose);
 };
 
 const setUserForm = () => {

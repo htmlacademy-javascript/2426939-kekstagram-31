@@ -77,7 +77,7 @@ pictures.addEventListener('click', (evt) => {
         limit += LIMIT_OF_COMMENT;
         createElements(comments, index, limit);
       };
-      const modalClose = () => {
+      const onPictureClose = () => {
         closePopup(bigPicture, onDocumentKeydown);
         body.classList.remove('modal-open');
         loadMoreButton.removeEventListener('click', onLoadButtonClick);
@@ -98,9 +98,9 @@ pictures.addEventListener('click', (evt) => {
           loadMoreButton.classList.add('hidden');
         }
       }
-      closeButton.addEventListener('click', modalClose);
-      document.addEventListener('keydown', modalClose);
-      overlay.addEventListener('click', modalClose);
+      closeButton.addEventListener('click', onPictureClose);
+      document.addEventListener('keydown', onPictureClose);
+      overlay.addEventListener('click', onPictureClose);
     });
   };
   getData(createErrorComment).then((data) => getFullscreen(data));
